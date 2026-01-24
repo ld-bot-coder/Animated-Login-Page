@@ -1,0 +1,51 @@
+ * Serving Flask app 'app'
+ * Debug mode: off
+2026-01-22 23:54:51,224 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5001
+ * Running on http://172.20.10.6:5001
+2026-01-22 23:54:51,224 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2026-01-22 23:55:07,478 - app.pipeline - INFO - Starting pipeline for query: What is the customer support email for Airbnb?
+2026-01-22 23:55:16,673 - app.search - INFO - Oxylabs search returned 10 results for query: What is the customer support email for Airbnb?
+2026-01-22 23:55:16,676 - app.crawler - INFO - Crawling: https://www.airbnb.com/help/article/1542
+2026-01-22 23:55:16,678 - app.crawler - INFO - Crawling: https://www.airbnb.com/help
+2026-01-22 23:55:16,678 - app.crawler - INFO - Crawling: https://www.facebook.com/groups/professionalhosts/posts/25289966990673321/
+2026-01-22 23:55:24,763 - app.pipeline - INFO - Using 3 valid sources (0 direct, 3 crawled)
+2026-01-22 23:55:37,031 - werkzeug - INFO - 127.0.0.1 - - [22/Jan/2026 23:55:37] "POST /api/search HTTP/1.1" 200 -
+2026-01-22 23:55:37,050 - app.pipeline - INFO - Starting pipeline for query: Find the contact phone number for Tesla roadside assistance.
+2026-01-22 23:55:41,416 - app.search - INFO - Oxylabs search returned 8 results for query: Find the contact phone number for Tesla roadside assistance.
+2026-01-22 23:55:41,417 - app.crawler - INFO - Crawling: https://www.tesla.com/roadside-assistance
+2026-01-22 23:55:41,417 - app.crawler - INFO - Crawling: https://www.tesla.com/support/roadside-assistance
+2026-01-22 23:55:41,420 - app.crawler - INFO - Crawling: https://www.tesla.com/support/customer-support
+2026-01-22 23:55:48,334 - app.pipeline - INFO - Using 1 valid sources (0 direct, 1 crawled)
+2026-01-22 23:56:09,617 - werkzeug - INFO - 127.0.0.1 - - [22/Jan/2026 23:56:09] "POST /api/search HTTP/1.1" 200 -
+2026-01-22 23:56:09,628 - app.pipeline - INFO - Starting pipeline for query: Address of Google headquarters in Mountain View
+2026-01-22 23:56:15,601 - app.search - INFO - Oxylabs search returned 10 results for query: Address of Google headquarters in Mountain View
+2026-01-22 23:56:15,604 - app.crawler - INFO - Crawling: https://en.wikipedia.org/wiki/Googleplex
+2026-01-22 23:56:15,604 - app.crawler - INFO - Crawling: https://maps.apple.com/place?auid=13012628869081955587
+2026-01-22 23:56:15,605 - app.crawler - INFO - Crawling: https://www.globaldata.com/company-profile/google-llc/locations/
+2026-01-22 23:56:22,141 - app.pipeline - INFO - Using 3 valid sources (0 direct, 3 crawled)
+2026-01-22 23:56:41,586 - werkzeug - INFO - 127.0.0.1 - - [22/Jan/2026 23:56:41] "POST /api/search HTTP/1.1" 200 -
+2026-01-22 23:56:41,598 - app.pipeline - INFO - Starting pipeline for query: What is the current stock price of Apple?
+2026-01-22 23:56:45,435 - app.search - INFO - Oxylabs search returned 10 results for query: What is the current stock price of Apple?
+2026-01-22 23:56:45,437 - app.crawler - INFO - Crawling: https://investor.apple.com/stock-price/default.aspx
+2026-01-22 23:56:45,437 - app.crawler - INFO - Crawling: https://es.finance.yahoo.com/quote/AAPL/
+2026-01-22 23:56:45,437 - app.crawler - INFO - Crawling: https://www.cnbc.com/quotes/AAPL
+2026-01-22 23:56:51,670 - app.pipeline - INFO - Using 3 valid sources (0 direct, 3 crawled)
+2026-01-22 23:57:23,379 - werkzeug - INFO - 127.0.0.1 - - [22/Jan/2026 23:57:23] "POST /api/search HTTP/1.1" 200 -
+2026-01-22 23:57:23,390 - app.pipeline - INFO - Starting pipeline for query: Who is the CEO of Microsoft and can you find their public email?
+2026-01-22 23:57:27,222 - app.search - INFO - Oxylabs search returned 10 results for query: Who is the CEO of Microsoft and can you find their public email?
+2026-01-22 23:57:27,222 - app.crawler - INFO - Crawling: https://www.quora.com/Is-Satya-Nadellas-email-at-Microsoft-Satya-Nadella-Microsoft-com-Does-he-reply-to-unsolicited-emails-Or-does-he-have-an-EA-who-filters-everything
+2026-01-22 23:57:27,222 - app.crawler - INFO - Crawling: https://www.linkedin.com/in/satyanadella
+2026-01-22 23:57:27,226 - app.crawler - INFO - Crawling: https://www.microsoft.com/ceo
+2026-01-22 23:57:35,113 - app.pipeline - INFO - Using 3 valid sources (0 direct, 3 crawled)
+2026-01-22 23:57:51,737 - werkzeug - INFO - 127.0.0.1 - - [22/Jan/2026 23:57:51] "POST /api/search HTTP/1.1" 200 -
+2026-01-22 23:57:51,749 - app.pipeline - INFO - Starting pipeline for query: find email and phone of rahul kumar software developer working in multiplier ai hyderabad
+2026-01-22 23:58:10,615 - app.search - INFO - Oxylabs search returned 9 results for query: find email and phone of rahul kumar software developer working in multiplier ai hyderabad
+2026-01-22 23:58:10,617 - app.crawler - INFO - Crawling: https://in.linkedin.com/in/rahul-kumar-7b20693a3
+2026-01-22 23:58:10,618 - app.crawler - INFO - Crawling: https://rocketreach.co/vikram-kumar-email_376818197
+2026-01-22 23:58:10,618 - app.crawler - INFO - Crawling: https://in.linkedin.com/in/rahul-kumar-jha-396b3b80
+2026-01-22 23:58:13,862 - app.crawler - ERROR - Failed to crawl https://in.linkedin.com/in/rahul-kumar-7b20693a3: Page.evaluate: Execution context was destroyed, most likely because of a navigation
+2026-01-22 23:58:14,450 - app.pipeline - INFO - Using 2 valid sources (0 direct, 2 crawled)
+2026-01-22 23:58:15,102 - app.llm - ERROR - LLM Generation failed: 429 Client Error: Too Many Requests for url: https://api.ollama.com/api/chat
+2026-01-22 23:58:15,105 - werkzeug - INFO - 127.0.0.1 - - [22/Jan/2026 23:58:15] "POST /api/search HTTP/1.1" 200 -

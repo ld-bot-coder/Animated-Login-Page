@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GenSpark Engine</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <h1>GenSpark Engine</h1>
+            <p class="subtitle">Next-Gen AI Search & Extraction</p>
+        </header>
+
+        <div class="glass-panel search-box-container">
+            <div class="search-box">
+                <input type="text" id="query" placeholder="Ask anything... (e.g., 'AAPL Stock', 'Airbnb email')"
+                    autocomplete="off">
+                <button onclick="performSearch()">Search</button>
+            </div>
+            <div class="options">
+                <input type="checkbox" id="deepMode">
+                <label for="deepMode">Deep Mode (Force Crawling)</label>
+            </div>
+        </div>
+
+        <div id="loading" class="loading">
+            <div class="spinner"></div>
+            <p>Analyzing reliable sources...</p>
+        </div>
+
+        <div id="results" class="glass-panel">
+            <div class="result-header">
+                <h3>Answer</h3>
+            </div>
+            <div id="answerContent" class="markdown-content"></div>
+
+            <div class="sources">
+                <h4>Sources</h4>
+                <div id="sourcesList"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        async function performSearch() {
+            const query = document.getElementById('query').value;
+            const deepMode = document.getElementById('deepMode').checked;
+            const resultsDiv = document.getElementById('results');
+            const loadingDiv = document.getElementById('loading');
+            const answerContent = document.getElementById('answerContent');
+            const sourcesList = document.getElementById('sourcesList');
+
+            if (!query) return;
+
+            // Reset UI
+            resultsDiv.style.display = 'none';
+            loadingDiv.style.display = 'block';
+            answerContent.innerHTML = '';
+            sourcesList.innerHTML = '';
+
+            try {
+                const response = await fetch('/api/search', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ query, deep_mode: deepMode })
+                });
+
+                if (!response.ok) {
+                    throw new Error('Search failed');
+                }
+
+                const data = await response.json();
+
+                // Render MD
+                answerContent.innerHTML = marked.parse(data.answer);
+
+                // Render Sources
+                // Prioritize "valid_sources" which includes our Google Direct highlights
+                const sources = data.sources || data.search_metadata || [];
+
+                if (sources.length > 0) {
+                    sources.forEach((source, index) => {
+                        const div = document.createElement('div');
+                        div.className = 'source-item';
+
+                        // Check if it's a direct Google answer
+                        const isDirect = source.content && source.content.startsWith("GOOGLE HIGHLIGHT");
+                        const badgeClass = isDirect ? 'badge-ai' : 'badge-web';
+                        const badgeText = isDirect ? 'DIRECT' : 'WEB';
+
+                        div.innerHTML = `
+                            <span class="badge ${badgeClass}">${badgeText}</span>
+                            <span>[${index + 1}]</span> 
+                            <a href="${source.url}" target="_blank">${source.title || source.url}</a>
+                        `;
+                        sourcesList.appendChild(div);
+                    });
+                } else {
+                    sourcesList.innerHTML = '<p class="text-light">No specific sources cited.</p>';
+                }
+
+                loadingDiv.style.display = 'none';
+                resultsDiv.style.display = 'block';
+
+            } catch (error) {
+                console.error(error);
+                loadingDiv.style.display = 'none';
+                alert('An error occurred. Check console.');
+            }
+        }
+
+        // Allow Enter key
+        document.getElementById('query').addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') {
+                performSearch();
+            }
+        });
+    </script>
+</body>
+
+</html>

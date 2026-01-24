@@ -1,0 +1,10 @@
+flask
+requests
+playwright
+celery
+redis
+pymongo
+python-dotenv
+beautifulsoup4
+pydantic
+gunicorn
