@@ -1,0 +1,59 @@
+services:
+  - type: web
+    name: medpulse-console
+    runtime: docker
+    dockerfilePath: web/Dockerfile
+    dockerContext: web
+    plan: free
+    healthCheckPath: /api/health
+    autoDeploy: true
+    numInstances: 1
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: OLLAMA_API_KEY
+        sync: false
+      - key: NCBI_API_KEY
+        sync: false
+      - key: TAVILY_API_KEY
+        sync: false
+      - key: FEATHERLESS_API_KEY
+        sync: false
+      - key: OPENROUTER_API_KEY
+        sync: false
+      - key: BAND_CHAT_ROOM_ID
+        sync: false
+      - key: BAND_USER_ID
+        sync: false
+      - key: TRIAGE_API_KEY
+        sync: false
+      - key: TRIAGE_AGENT_ID
+        sync: false
+      - key: TRIAGE_HANDLE
+        sync: false
+      - key: MGMT_API_KEY
+        sync: false
+      - key: MGMT_AGENT_ID
+        sync: false
+      - key: MGMT_HANDLE
+        sync: false
+      - key: INVEST_API_KEY
+        sync: false
+      - key: INVEST_AGENT_ID
+        sync: false
+      - key: INVEST_HANDLE
+        sync: false
+      - key: DOC_API_KEY
+        sync: false
+      - key: DOC_AGENT_ID
+        sync: false
+      - key: DOC_HANDLE
+        sync: false
+      - key: OBSERVER_API_KEY
+        sync: false
+      - key: OBSERVER_AGENT_ID
+        sync: false
+      - key: OBSERVER_HANDLE
+        sync: false
+      - key: AUTO_APPROVE
+        sync: false

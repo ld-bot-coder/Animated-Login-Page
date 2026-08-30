@@ -1,0 +1,191 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import { motion } from "framer-motion";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
+import { Heartbeat, Timer, Warning } from "@phosphor-icons/react";
+import type { TriageData, Vital } from "@/lib/types";
+
+// ATS colour → on-dark palette. Each entry drives the urgency card surface.
+const ATS_THEME: Record<TriageData["color"], { bg: string; fg: string; ring: string; label: string }> = {
+  RED: { bg: "#D8443C", fg: "#fff", ring: "#7e1f1d", label: "Resuscitation" },
+  ORANGE: { bg: "#D2682F", fg: "#fff", ring: "#8a4513", label: "Emergency" },
+  YELLOW: { bg: "#F5B026", fg: "#1E3A34", ring: "#8f7012", label: "Urgent" },
+  GREEN: { bg: "#3F8A54", fg: "#fff", ring: "#2c5630", label: "Semi-urgent" },
+  WHITE: { bg: "#F8FCFB", fg: "#0D4A45", ring: "#CCDFDA", label: "Non-urgent" },
+};
+
+// Hide the trailing machine-readable JSON block from the live preview — even
+// while it's still streaming and the fence/brace isn't closed yet.
+function stripStreamingJson(text: string): string {
+  const fence = text.search(/```json/i);
+  if (fence !== -1) return text.slice(0, fence).trim();
+  const brace = text.search(/\{\s*"ats"/i);
+  if (brace !== -1) return text.slice(0, brace).trim();
+  return text;
+}
+
+function fmt(s: number): string {
+  if (s <= 0) return "00:00";
+  const m = Math.floor(s / 60);
+  const sec = s % 60;
+  return `${String(m).padStart(2, "0")}:${String(sec).padStart(2, "0")}`;
+}
+
+/** Countdown clock that ticks down from the ATS max-wait window. */
+function WaitClock({ minutes }: { minutes: number }) {
+  const [remaining, setRemaining] = useState(minutes * 60);
+
+  useEffect(() => {
+    setRemaining(minutes * 60);
+    if (minutes <= 0) return;
+    const id = setInterval(() => setRemaining((r) => (r > 0 ? r - 1 : 0)), 1000);
+    return () => clearInterval(id);
+  }, [minutes]);
+
+  const breach = minutes > 0 && remaining === 0;
+
+  if (minutes <= 0) {
+    return (
+      <div className="flex items-center gap-2 font-mono text-sm font-semibold text-[#D8443C]">
+        <Timer size={16} weight="fill" />
+        SEE IMMEDIATELY
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex items-center gap-2">
+      <Timer size={16} weight={breach ? "fill" : "bold"} className={breach ? "text-[#D8443C]" : ""} />
+      <span
+        className={`font-mono text-sm font-semibold tabular-nums ${
+          breach ? "animate-pulse text-[#D8443C]" : "text-navy"
+        }`}
+      >
+        {breach ? "WAIT BREACHED" : `${fmt(remaining)} to target`}
+      </span>
+    </div>
+  );
+}
+
+export function TriagePanel({
+  triage,
+  vitals,
+  liveText,
+}: {
+  triage: TriageData | null;
+  vitals: Vital[];
+  liveText?: string;
+}) {
+  // While the triage agent is still streaming and we have no parsed card yet,
+  // show the live tokens (markdown-rendered) inside the card area.
+  const streaming = !triage && !!liveText && liveText.trim().length > 0;
+
+  // Prefer the vitals the Triage agent emitted as structured JSON; fall back to
+  // the regex-parsed vitals from the raw case only if the agent provided none.
+  const shownVitals = triage?.vitals && triage.vitals.length > 0 ? triage.vitals : vitals;
+
+  return (
+    <div className="space-y-4">
+      {/* Live triage stream — shown until the parsed urgency card is ready */}
+      {streaming && (
+        <motion.div
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="overflow-hidden rounded-3xl border border-triage/40 bg-cream-soft/80 px-5 py-4"
+        >
+          <div className="mb-2 flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.2em] text-triage">
+            <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-triage" />
+            Triage assessing…
+          </div>
+          <div className="md text-[0.9rem] leading-snug text-navy/90">
+            <ReactMarkdown remarkPlugins={[remarkGfm]}>
+              {stripStreamingJson(liveText ?? "")}
+            </ReactMarkdown>
+          </div>
+        </motion.div>
+      )}
+
+      {/* Urgency card */}
+      {triage ? (
+        <motion.div
+          initial={{ opacity: 0, scale: 0.96 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ type: "spring", stiffness: 140, damping: 18 }}
+          className="overflow-hidden rounded-3xl border shadow-[0_18px_40px_-22px_rgba(13,74,69,0.5)]"
+          style={{ background: ATS_THEME[triage.color].bg, borderColor: ATS_THEME[triage.color].ring }}
+        >
+          <div className="px-5 py-5" style={{ color: ATS_THEME[triage.color].fg }}>
+            <div className="flex items-start justify-between">
+              <div>
+                <div className="font-mono text-[10px] uppercase tracking-[0.2em] opacity-80">
+                  Triage category
+                </div>
+                <div className="mt-1 text-4xl font-bold leading-none tracking-tight">
+                  ATS {triage.atsLevel}
+                </div>
+                <div className="mt-1 text-sm font-medium opacity-90">{triage.category}</div>
+              </div>
+              <span
+                className="rounded-full border px-2.5 py-1 font-mono text-[10px] font-semibold uppercase tracking-widest"
+                style={{ borderColor: ATS_THEME[triage.color].fg + "55" }}
+              >
+                {triage.color}
+              </span>
+            </div>
+
+            <div className="mt-4 border-t pt-3" style={{ borderColor: ATS_THEME[triage.color].fg + "33" }}>
+              <WaitClock minutes={triage.maxWaitMinutes} />
+            </div>
+
+            {triage.summary && (
+              <div className="md mt-3 text-[0.9rem] leading-snug opacity-95">
+                <ReactMarkdown remarkPlugins={[remarkGfm]}>{triage.summary}</ReactMarkdown>
+              </div>
+            )}
+          </div>
+        </motion.div>
+      ) : streaming ? null : (
+        <div className="flex items-center gap-3 rounded-3xl border border-navy-line bg-cream-soft/60 px-5 py-6 text-navy/45">
+          <Heartbeat size={22} weight="duotone" />
+          <span className="text-sm">Awaiting triage assessment…</span>
+        </div>
+      )}
+
+      {/* Vitals */}
+      <div className="rounded-3xl border border-navy-line bg-cream-soft/70 p-5">
+        <div className="mb-3 flex items-center gap-2 text-xs font-semibold uppercase tracking-widest text-navy/55">
+          <Heartbeat size={15} weight="bold" />
+          Clinical vitals
+        </div>
+        {shownVitals.length === 0 ? (
+          <p className="text-sm text-navy/45">No vitals parsed from the case.</p>
+        ) : (
+          <div className="grid grid-cols-2 gap-2.5">
+            {shownVitals.map((v) => (
+              <div
+                key={v.label}
+                className={`rounded-2xl border px-3 py-2.5 ${
+                  v.abnormal ? "border-[#D8443C]/40 bg-[#D8443C]/5" : "border-navy-line bg-cream/40"
+                }`}
+              >
+                <div className="flex items-center gap-1 font-mono text-[10px] uppercase tracking-wide text-navy/50">
+                  {v.label}
+                  {v.abnormal && <Warning size={11} weight="fill" className="text-[#D8443C]" />}
+                </div>
+                <div
+                  className={`text-base font-semibold tabular-nums ${
+                    v.abnormal ? "text-[#D8443C]" : "text-navy"
+                  }`}
+                >
+                  {v.value}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
